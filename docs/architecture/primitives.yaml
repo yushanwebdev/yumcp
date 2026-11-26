@@ -1,0 +1,39 @@
+# Primitive catalog. Add an entry the first time a second feature reuses
+# something, not before (decision F0006).
+#
+# Impact labels in PR recaps:
+#   composes - wires existing primitives without changing them   -> low
+#   extends  - changes a primitive's behaviour, shape, or contract -> medium
+#   adds     - introduces a new primitive (update this file)      -> high
+#
+# `code` holds directory roots for longest-prefix matching. `adrs` lists the
+# decision records that shape the primitive ([] when none). `owner` drives
+# CODEOWNERS and decision routing.
+
+version: 1
+
+groups:
+  - id: surfaces
+    name: Entry points
+  - id: auth
+    name: Identity and access
+  - id: domain
+    name: Domain
+  - id: storage
+    name: Storage and infrastructure
+
+primitives: []
+# - id: web-app
+#   group: surfaces
+#   name: Browser app
+#   summary: Server-rendered pages and client navigation.
+#   code: [src/app/]
+#   docs: [docs/architecture/request-lifecycle.md]
+#   adrs: []
+#   owner: '@tech-lead'
+
+invariants: []
+# - id: tenant-isolation
+#   summary: Every read and write is scoped by its owning tenant id.
+#   adrs: []
+#   owner: '@tech-lead'

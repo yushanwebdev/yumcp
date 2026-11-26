@@ -1,0 +1,49 @@
+# Computed risk (factory decision F0020), evaluated by the `risk-gate` required check:
+#   risk = max(declared, path floor)   # a declaration can only raise the tier
+#   later: + primitive rollup, taint floor (F0022), error-budget floor (F0023)
+# Enforcement lives in GitHub, not here: keep `high:` in step with
+# .github/CODEOWNERS and the default-branch ruleset.
+# Autonomy level (F0019):
+#   0 humans merge all · 1 low auto · 2 low+medium auto · 3 plus autonomous loops
+#
+# Layout: docs/factory/setup.md. Public contract and security core are high.
+
+autonomy: 0
+
+high:
+  # Gate files
+  - .github/**
+  - .claude/**
+  - riskmap.yaml
+  - docs/factory/**
+  - docs/decisions/**
+  - docs/intent.md
+  - docs/architecture/primitives.yaml
+  # One-way doors: auth, public contract, credentials, enforcement, stored data
+  - apps/gateway/src/auth/**
+  - apps/gateway/src/contract/**
+  - apps/gateway/src/vault/**
+  - apps/gateway/src/guard/**
+  - packages/db/migrations/**
+  - apps/gateway/wrangler.jsonc
+
+medium:
+  - apps/gateway/src/upstream/**
+  - packages/db/**
+
+# Everything else (apps/portal/**, tooling): low.
+
+taint:
+  # Sources whose text counts as external input (F0022).
+  external: [sentry, user-feedback, issue-from-non-member, upstream-tool-output]
+  floor: medium
+  humanMergeIfTouches:
+    - apps/gateway/src/auth/**
+    - apps/gateway/src/vault/**
+    - apps/gateway/src/guard/**
+    - .github/workflows/**
+
+errorBudget:
+  # F0023: while a surface's budget is spent, auto-merge above low risk
+  # pauses for PRs touching these paths.
+  # surface: [paths]

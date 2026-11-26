@@ -1,0 +1,51 @@
+name: Friction
+description: Log a contributor or agent papercut while working in this repo
+title: 'Friction: '
+labels: [friction]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Search open `friction` issues first. One papercut per issue. File only
+        durable, recurring pain with a reproducible gap, not one-off confusion.
+        Omit secrets. Do not invent a root cause.
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: wanted
+    attributes:
+      label: What you wanted
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      description: Commands, files, or conditions a later agent can follow.
+    validations:
+      required: true
+  - type: textarea
+    id: cost
+    attributes:
+      label: Cost
+      description: Time or tokens lost, how often it happens, the workaround.
+    validations:
+      required: true
+  - type: textarea
+    id: preliminary
+    attributes:
+      label: Preliminary investigation
+      description: What you already looked at. Keep it short.
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Relevant files
+      description: One path per line, with line ranges when known.
+    validations:
+      required: false

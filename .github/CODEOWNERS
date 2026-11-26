@@ -1,0 +1,24 @@
+# Factory decision F0020: path floors are enforced by GitHub. Pair this file
+# with a default-branch ruleset that requires a PR, code-owner review,
+# approval of the most recent push by someone other than the pusher,
+# dismissal of stale approvals, and no bypass actors.
+#
+# Keep this list in step with `high:` in riskmap.yaml. Owners come from
+# `owner` in docs/architecture/primitives.yaml (F0006).
+
+# Gate files: agents must never edit their own gate. /.github/ covers this file.
+/.github/                           @yushanwebdev
+/.claude/                           @yushanwebdev
+/riskmap.yaml                       @yushanwebdev
+/docs/factory/                      @yushanwebdev
+/docs/decisions/                    @yushanwebdev
+/docs/intent.md                     @yushanwebdev
+/docs/architecture/primitives.yaml  @yushanwebdev
+
+# One-way doors: auth, public contract, credentials, enforcement, stored data
+/apps/gateway/src/auth/             @yushanwebdev
+/apps/gateway/src/contract/         @yushanwebdev
+/apps/gateway/src/vault/            @yushanwebdev
+/apps/gateway/src/guard/            @yushanwebdev
+/apps/gateway/wrangler.jsonc        @yushanwebdev
+/packages/db/migrations/            @yushanwebdev

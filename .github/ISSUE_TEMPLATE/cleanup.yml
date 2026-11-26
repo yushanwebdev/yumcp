@@ -1,0 +1,40 @@
+name: Cleanup
+description: A leftover that cannot be removed in the change that created it
+title: 'Cleanup: <what to remove> after <gate>'
+labels: [cleanup]
+body:
+  - type: textarea
+    id: leftover
+    attributes:
+      label: Leftover
+      description: What to delete or stop serving (paths, tables, flags, shims).
+    validations:
+      required: true
+  - type: textarea
+    id: why-wait
+    attributes:
+      label: Why it waits
+      description: The gate (soak, second deploy, backfill, client cutover).
+    validations:
+      required: true
+  - type: textarea
+    id: ready-when
+    attributes:
+      label: Ready when
+      description: A falsifiable criterion, not just a date.
+    validations:
+      required: true
+  - type: textarea
+    id: verify
+    attributes:
+      label: How to verify
+      description: Commands, queries, or metrics that prove the drop is safe. The weekly reaper runs these.
+    validations:
+      required: true
+  - type: input
+    id: introduced-by
+    attributes:
+      label: Introduced by
+      description: The PR that added the leftover.
+    validations:
+      required: true
