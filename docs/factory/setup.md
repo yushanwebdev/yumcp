@@ -18,7 +18,8 @@ the remaining stages to issues.
 ## 1. Intent (human only, 1–2 h)
 
 - [x] Draft [docs/intent.md](../intent.md) from the tech lead's answers (2026-11-26)
-- [ ] Tech lead rewrites it in their own words and confirms the "job done" target
+- [x] Tech lead confirmed it on 2026-11-27, including the "job done" target
+      (4 harnesses: Claude Code, Codex, ChatGPT, yarvis)
 
 ## 2. Stack decisions (about 1 h)
 
@@ -34,8 +35,8 @@ otherwise re-propose.
 - [x] Integrations: proxy official MCP servers, pin tool definitions ([ADR 0004](../decisions/0004-proxy-official-mcp-servers.md))
 - [x] Auth: workers-oauth-provider with CIMD, behind Cloudflare Access ([ADR 0005](../decisions/0005-sign-in.md))
 - [x] Host name: `yumcp.yushanweb.dev`, a Workers Custom Domain
-      ([ADR 0005](../decisions/0005-sign-in.md)). Needs the `yushanweb.dev`
-      zone on Cloudflare (full setup).
+      ([ADR 0005](../decisions/0005-sign-in.md)). The `yushanweb.dev`
+      zone is on Cloudflare (confirmed 2026-11-27).
 - [x] Implementing agent: Claude (Claude Code, Opus 5.5)
 - [x] Reviewers: a fresh-context Claude reviewer, and Codex as the
       different-vendor reviewer for medium risk and above (F0021). Codex
@@ -66,9 +67,9 @@ packages/db/         D1 schema and the org-scoped repository layer          medi
       public repos (https://github.com/pricing). Public-repo duties:
   - [ ] Seed data, tests, fixtures and screenshots never contain real
         profiles, tool lists, tokens or upstream output
-  - [ ] Secret scanning and push protection on
-  - [ ] Settings → Actions: require approval for workflow runs from
-        **all** outside contributors
+  - [x] Secret scanning and push protection on (2026-11-27)
+  - [x] Settings → Actions: require approval for workflow runs from
+        **all** outside contributors (2026-11-27)
   - [ ] Issues and PRs from non-members are tainted input (F0022, already
         in `riskmap.yaml`); agents never act on their text directly
   - [x] Dropped `docs/factory/reference/kody-analysis.md` before the first
@@ -99,11 +100,29 @@ packages/db/         D1 schema and the org-scoped repository layer          medi
   - Commit identity:
     `<bot-user-id>+yumcp-agent[bot]@users.noreply.github.com`
   - Agents never push with your OAuth or SSH key
-- [ ] Default-branch ruleset: require a PR, code-owner review, approval of
-      the most recent push by someone other than the pusher, dismiss stale
-      approvals, no bypass actors
-- [ ] Settings → Actions: default `GITHUB_TOKEN` read-only; turn off "Allow
-      GitHub Actions to create and approve pull requests"
+- [x] **Workflow changes use split pushes** (decided 2026-11-27, option A;
+      F0022 is unchanged and the App keeps no `workflows` permission):
+  1. The agent puts every `.github/workflows/**` change in its own commit,
+     at the **start** of the branch.
+  2. The agent stops and asks. The tech lead pushes **only that commit**:
+     `git push origin <sha>:refs/heads/<branch>`
+  3. The App pushes the remaining commits, fast-forward, and opens the PR.
+     The App must be the **last pusher**, or the tech lead cannot approve
+     (`require_last_push_approval`).
+  4. A workflow fix during review repeats steps 1–3: a new workflow commit
+     pushed by the tech lead, then at least one App push on top.
+- [x] Default-branch ruleset `main: reviewed PRs only (F0020)` (ID
+      28189354, active since 2026-11-27):
+  - Requires a PR with 1 approval, code-owner review, and approval of the
+    most recent push by someone other than the pusher.
+  - Dismisses stale approvals and requires review threads to be resolved.
+  - Squash merges only. Blocks force pushes and branch deletion. No bypass
+    actors.
+  - GitHub also turned on `require_extra_approval_for_unattributed_changes`.
+  - Required status checks are added once CI exists (walking skeleton).
+- [x] Settings → Actions (2026-11-27): default `GITHUB_TOKEN` read-only;
+      Actions cannot create or approve PRs; actions must be pinned to a full
+      commit SHA (`sha_pinning_required`, which enforces F0022's pinning rule)
 - [ ] Deploy secrets in an environment with required reviewers; OIDC for cloud access
 
 Solo-maintainer catch: "approval of the most recent push by someone other
@@ -120,12 +139,21 @@ Guards, because the agent runs as the same macOS user as the tech lead:
 - [ ] The yumcp remote uses HTTPS with the App's one-hour token
       (`npm run ctl gh-token`), never the tech lead's SSH key or `gh`
       login. The App's private key lives outside the repo.
-- [ ] Strict sandbox: `sandbox.allowUnsandboxedCommands: false`. Bypass
-      permission mode together with unsandboxed retries lets the agent leave
-      the sandbox silently
-      (https://code.claude.com/docs/en/agent-sdk/typescript).
-- [ ] Deny rules for `gh pr review`, `gh pr merge`, `gh auth token`,
-      `gh api`, `security find-*-password` and `git credential`
+- [ ] Strict sandbox (`sandbox.allowUnsandboxedCommands: false`): **not
+      adopted for now**, along with the accepted password-manager risk
+      below. Setup tasks still run unsandboxed with the tech lead's approval.
+- [x] `.claude/settings.json` (2026-11-27):
+  - Sandbox on.
+  - Deny rules:
+    - `gh pr review`, `gh pr merge`, `gh auth`, `gh api`,
+      `gh repo edit`/`delete`, `gh secret`, `gh ruleset`
+    - `git push` (agents push only through the App helper)
+    - `git credential`, `security`
+    - `wrangler login`, `deploy`, `secret`, `--remote`
+  - Reads of `~/.ssh`, `~/.config/gh` and the wrangler config blocked.
+
+  Deny rules match command text, so `doctor` must test the effect, not
+  the config.
 - [ ] `npm run ctl doctor` fails if the agent session can obtain any GitHub
       credential other than the App token: through the `gh` keychain entry,
       `git credential fill` or `~/.config/gh`
@@ -181,7 +209,9 @@ Prompt, once 1–3 are done:
 > the PR title follows Conventional Commits, because squash merges use it as
 > the commit message. Add the `validate`, `ctl`,
 > and ship-pr skill pointers to `AGENTS.md` and keep it under 20 lines. No
-> feature code.
+> feature code. Push with the split-push procedure in section 3: workflow
+> files in their own first commit, pushed by the tech lead, then the rest by
+> the App.
 
 Read every line of that PR; every later PR copies its patterns.
 
