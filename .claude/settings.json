@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "Bash(gh pr review *)",
+      "Bash(gh pr merge *)",
+      "Bash(gh auth *)",
+      "Bash(gh api *)",
+      "Bash(gh repo edit *)",
+      "Bash(gh repo delete *)",
+      "Bash(gh secret *)",
+      "Bash(gh ruleset *)",
+      "Bash(git push *)",
+      "Bash(git -c * push *)",
+      "Bash(git -C * push *)",
+      "Bash(git credential *)",
+      "Bash(security *)",
+      "Bash(wrangler login *)",
+      "Bash(wrangler deploy *)",
+      "Bash(wrangler secret *)",
+      "Bash(wrangler * --remote *)",
+      "Bash(npx wrangler login *)",
+      "Bash(npx wrangler deploy *)",
+      "Bash(npx wrangler secret *)",
+      "Bash(npx wrangler * --remote *)",
+      "Read(~/.ssh/**)",
+      "Read(~/.config/gh/**)",
+      "Read(~/Library/Preferences/.wrangler/**)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true
+  }
+}

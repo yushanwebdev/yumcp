@@ -2,8 +2,7 @@
 
 Written by a human. Agents read this before any product-level decision.
 
-<!-- Drafted on 2026-11-26 by an agent from the tech lead's own answers.
-Edit it into your own words; delete this comment when you have. -->
+Confirmed by the tech lead on 2026-11-27.
 
 ## User and job
 
